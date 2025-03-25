@@ -11,9 +11,9 @@ const translatePath = useTranslatedPath(lang);
 	<div class="mx-auto flex h-full flex-col py-4 lg:py-10">
 		<div class="relative flex flex-1 flex-col justify-around rounded-lg pb-10 pt-20 lg:rounded-2xl">
 			<div class="flex justify-center">
-				<h1 class="text-center font-display text-5xl font-extrabold uppercase sm:text-7xl md:text-8xl lg:text-9xl">
+				<h1 class="text-center font-display text-5xl font-extrabold uppercase sm:text-7xl md:text-8xl lg:text-9x  w-screen">
 					<span>{t("hero.title.main")}</span>
-					<span class="rotator relative inline-flex h-20 w-full justify-center md:h-24 lg:h-32">
+					<span class="rotator relative inline-flex h-[400px] w-full justify-center md:h-[400px] lg:h-[400px]">
 						<span>{t("hero.title.1")}</span><span>{t("hero.title.2")}</span><span>{t("hero.title.3")}</span><span>
 							{t("hero.title.4")}
 						</span><span>{t("hero.title.1")}</span>
@@ -86,34 +86,50 @@ const translatePath = useTranslatedPath(lang);
 	.rotator > span:not(:nth-child(1)) {
 		opacity: 0;
 	}
+
+	.split-parent {
+		overflow: hidden;
+		line-height: 1.2;
+	}
+	
+	.split-child {
+		display: inline-block;
+	}
 </style>
 
 <script>
 	import { gsap } from "gsap";
 	import { ScrollTrigger } from "gsap/ScrollTrigger";
-	import { SplitText } from "gsap/SplitText";
 	import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
-	gsap.registerPlugin(ScrollTrigger, SplitText, ScrollToPlugin);
+	gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 	function init() {
-		const childSplit = new SplitText(".hero h1", {
-			type: "lines",
-			linesClass: "split-child",
-		});
-		const parentSplit = new SplitText(".hero h1", {
-			linesClass: "split-parent",
-		});
-
-		gsap.timeline()
-			.from(childSplit.lines, {
+		// Alternativa a SplitText
+		const h1Element = document.querySelector(".hero h1");
+		
+		if (h1Element) {
+			// Envuelve cada línea en un div para animación
+			const text = h1Element.innerHTML;
+			const lines = text.split('<br>');
+			
+			let wrappedText = '';
+			lines.forEach(line => {
+				wrappedText += `<div class="split-parent"><div class="split-child">${line}</div></div>`;
+			});
+			
+			h1Element.innerHTML = wrappedText;
+			
+			// Anima las líneas
+			const splitChildren = document.querySelectorAll(".split-child");
+			
+			gsap.set(".hero h1", { visibility: "visible" });
+			gsap.from(splitChildren, {
 				duration: 1.5,
 				yPercent: 100,
 				ease: "power4",
 				stagger: 0.1,
-			})
-			.set(".hero h1", { visibility: "visible" }, "<")
-			.then(() => {
+			}).then(() => {
 				const words = document.querySelectorAll(".hero .rotator > span");
 
 				let rotatorTimeline = gsap.timeline({ repeat: -1 });
@@ -137,6 +153,7 @@ const translatePath = useTranslatedPath(lang);
 					rotatorTimeline.add(wordTL, delay);
 				}
 			});
+		}
 
 		var goProjectsButton = document.getElementById("go-projects-button");
 		goProjectsButton?.addEventListener("click", function () {

@@ -32,32 +32,39 @@ const { class: className } = Astro.props;
 <script>
 	import { gsap } from "gsap";
 	import { ScrollTrigger } from "gsap/ScrollTrigger";
-	import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 
-	gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+	gsap.registerPlugin(ScrollTrigger);
 
 	function init() {
 		const linePath = document.querySelector(".all-in-one-line-path");
+		if (linePath) {
+			const svgPath = linePath as SVGPathElement;
+			const pathLength = svgPath.getTotalLength ? svgPath.getTotalLength() : 1000;
+			
+			// Configuración inicial para emular drawSVG
+			gsap.set(linePath, { 
+				strokeDasharray: pathLength,
+				strokeDashoffset: pathLength
+			});
 
-		gsap.set(linePath, { drawSVG: 0 });
-
-		gsap.timeline({
-			scrollTrigger: {
-				trigger: ".line-animation-wrapper",
-				scrub: 1,
-				start: "top center",
-				end: "bottom center",
-				markers: false,
-			},
-			defaults: { ease: "none" },
-		}).to(
-			linePath,
-			{
-				drawSVG: "100%",
-				// ease: "power4.in",
-			},
-			0,
-		);
+			gsap.timeline({
+				scrollTrigger: {
+					trigger: ".line-animation-wrapper",
+					scrub: 1,
+					start: "top center",
+					end: "bottom center",
+					markers: false,
+				},
+				defaults: { ease: "none" },
+			}).to(
+				linePath,
+				{
+					strokeDashoffset: 0,
+					// ease: "power4.in",
+				},
+				0,
+			);
+		}
 	}
 
 	document.removeEventListener("DOMContentLoaded", init); // astro:page-load

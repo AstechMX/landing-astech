@@ -49,72 +49,95 @@ const translatePath = useTranslatedPath(lang);
 <script>
 	import { gsap } from "gsap";
 	import { ScrollTrigger } from "gsap/ScrollTrigger";
-	import { SplitText } from "gsap/SplitText";
-	import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
-	import { MotionPathPlugin } from "gsap/MotionPathPlugin";
-
-	gsap.registerPlugin(ScrollTrigger, SplitText, DrawSVGPlugin, MotionPathPlugin);
+	
+	gsap.registerPlugin(ScrollTrigger);
 
 	function init() {
 		const linePath = document.querySelector("#tagline-arrow-path");
+		if (linePath) {
+			const svgPath = linePath as SVGPathElement;
+			const pathLength = svgPath.getTotalLength ? svgPath.getTotalLength() : 1000;
+			
+			// Configuración inicial para emular drawSVG
+			gsap.set(linePath, { 
+				strokeDasharray: pathLength,
+				strokeDashoffset: pathLength
+			});
 
-		gsap.set(linePath, { drawSVG: 0 });
-
-		let otherQTl = gsap
-			.timeline({
+			let otherQTl = gsap
+				.timeline({
+					scrollTrigger: {
+						trigger: ".tagline-arrows",
+						start: "center bottom",
+						end: "center center",
+						markers: false,
+						scrub: 1,
+					},
+				})
+				.to(
+					linePath,
+					{
+						strokeDashoffset: 0,
+					},
+					"<",
+				)
+				.to(
+					"#tagline-arrow",
+					{
+						opacity: 1,
+						duration: 0.1,
+					},
+					"<",
+				);
+			
+			// Versión simplificada de animación de flecha - sin MotionPathPlugin
+			gsap.to("#tagline-arrow", {
 				scrollTrigger: {
 					trigger: ".tagline-arrows",
 					start: "center bottom",
 					end: "center center",
-					markers: false,
-					scrub: 1,
+					scrub: 1
 				},
-			})
-			.to(
-				linePath,
-				{
-					drawSVG: "100%",
-				},
-				"<",
-			)
-			.to(
-				"#tagline-arrow",
-				{
-					opacity: 1,
-					duration: 0.1,
-				},
-				"<",
-			)
-			.to(
-				"#tagline-arrow",
-				{
-					motionPath: {
-						path: "#tagline-arrow-path",
-						align: "#tagline-arrow-path",
-						alignOrigin: [0.5, 0.5],
-						autoRotate: 30,
-					},
-				},
-				0,
-			);
-
-		const split = new SplitText("#services-tagline", { type: "lines" });
-
-		split.lines.forEach((target) => {
-			gsap.to(target, {
-				backgroundPositionX: 0,
-				ease: "none",
-				scrollTrigger: {
-					trigger: target,
-					markers: false,
-					scrub: 1,
-					start: "top bottom-=20%",
-					end: "bottom bottom-=10%",
-				},
+				x: 200,
+				y: 100,
+				rotation: 30,
+				ease: "none"
 			});
-		});
+
+			// Alternativa a SplitText
+			const taglineElement = document.querySelector("#services-tagline");
+			if (taglineElement) {
+				// Dividir el texto manualmente
+				const text = taglineElement.innerHTML;
+				const lines = text.split('<br>');
+				
+				let wrappedText = '';
+				lines.forEach(line => {
+					wrappedText += `<div>${line}</div>`;
+				});
+				
+				taglineElement.innerHTML = wrappedText;
+				
+				// Animar cada línea
+				const lineElements = taglineElement.querySelectorAll("div");
+				
+				lineElements.forEach((target) => {
+					gsap.to(target, {
+						backgroundPositionX: 0,
+						ease: "none",
+						scrollTrigger: {
+							trigger: target,
+							markers: false,
+							scrub: 1,
+							start: "top bottom-=20%",
+							end: "bottom bottom-=10%",
+						},
+					});
+				});
+			}
+		}
 	}
 
-	document.removeEventListener("DOMContentLoaded", init); // astro:page-load
-	document.addEventListener("DOMContentLoaded", init); // astro:page-load
+	document.removeEventListener("DOMContentLoaded", init);
+	document.addEventListener("DOMContentLoaded", init);
 </script>

@@ -199,56 +199,50 @@ const faqs = [
 <script>
 	import { gsap } from "gsap";
 	import { ScrollTrigger } from "gsap/ScrollTrigger";
-	import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 
-	gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+	gsap.registerPlugin(ScrollTrigger);
 
 	function init() {
 		gsap.to("#faq", {
+			x: 0,
+			opacity: 1,
 			scrollTrigger: {
 				trigger: "#faq",
-				start: "bottom center",
-				end: "bottom top",
-				scrub: 1,
+				start: "top 70%",
+				end: "top 60%",
+				toggleActions: "play none none reverse",
+				once: false,
 				markers: false,
 			},
-			"--faq-clip": "2vw",
-			"--faq-radius": "5rem",
 		});
 
-		const linePath = document.querySelector("#faq-more-question-path");
+		const linePath = document.querySelector(".faq-line-path");
+		if (linePath) {
+			const svgPath = linePath as SVGPathElement;
+			const pathLength = svgPath.getTotalLength ? svgPath.getTotalLength() : 1000;
+			
+			// Configuración inicial para emular drawSVG
+			gsap.set(linePath, { 
+				strokeDasharray: pathLength,
+				strokeDashoffset: pathLength
+			});
 
-		gsap.set(linePath, { drawSVG: 0 });
-
-		let otherQTl = gsap
-			.timeline({
+			let otherQTl = gsap.timeline({
 				scrollTrigger: {
-					trigger: ".faq-more-questions",
-					start: "center 90%",
-					end: "center top",
+					trigger: "#faq",
+					start: "center 60%",
+					end: "bottom 60%",
+					scrub: 1,
 					markers: false,
-					toggleActions: "play none none reverse",
 				},
-			})
-			.to(".faq-more-questions .other-question-title", {
-				opacity: 1,
-				duration: 0.5,
-			})
-			.to(
-				linePath,
-				{
-					drawSVG: "100%",
-					duration: 2,
-				},
-				"<",
-			)
-			.to(
-				".faq-contact-us-button",
-				{
-					opacity: 1,
-				},
-				">-=1.5",
-			);
+			});
+
+			otherQTl.to(linePath, {
+				strokeDashoffset: 0,
+				duration: 1,
+				ease: "none",
+			});
+		}
 	}
 
 	document.removeEventListener("DOMContentLoaded", init); // astro:page-load

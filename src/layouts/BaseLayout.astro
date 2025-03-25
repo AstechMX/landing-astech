@@ -17,45 +17,49 @@ const { seo: seoProp } = Astro.props;
 
 const lang = getLangFromUrl(Astro.url);
 
-const shareImage = new URL("/images/meta/mintaka_share.gif", Astro.site).toString();
+
 
 const defaultSeo: AstroSeoProps = {
-	title: "Web Agency Leading in Performant Web Design Solutions - Mintaka Studio",
+	title: "ASTECH - Soluciones de IA y Automatización para Empresas",
 	description:
-		"Mintaka Studio excels in creating fast, user-friendly websites with a focus on aesthetic design and SEO optimization, ensuring a standout online presence",
-	canonical: "https://mintaka.co",
+		"ASTECH desarrolla sistemas avanzados con IA y aplicaciones inteligentes para facilitar y automatizar procesos con agentes especializados. Innovamos en tecnología para tu negocio.",
+	canonical: "https://astech.dev",
 	openGraph: {
-		url: "https://mintaka.co",
-		title: "Web Agency Leading in Performant Web Design Solutions - Mintaka Studio",
+		url: "https://astech.dev",
+		title: "ASTECH - Soluciones de IA y Automatización para Empresas",
 		description:
-			"Mintaka Studio excels in creating fast, user-friendly websites with a focus on aesthetic design and SEO optimization, ensuring a standout online presence",
+			"ASTECH desarrolla sistemas avanzados con IA y aplicaciones inteligentes para facilitar y automatizar procesos con agentes especializados. Innovamos en tecnología para tu negocio.",
 		images: [
 			{
-				url: shareImage,
+				url: '',
 				width: 1200,
 				height: 630,
-				alt: "Social open graph",
+				alt: "ASTECH - Inteligencia Artificial y Automatización",
 				type: "image/gif",
 			},
 			{
-				url: shareImage,
+				url: '',
 				width: 4096,
 				height: 4096,
-				alt: "Twitter open graph",
+				alt: "ASTECH logo",
 				type: "image/gif",
 			},
 		],
-		site_name: "Mintaka",
+		site_name: "ASTECH",
 	},
 	twitter: {
-		handle: "@mintakastudio",
-		site: "@mintakastudio",
+		handle: "@astech_ai",
+		site: "@astech_ai",
 		cardType: "summary_large_image",
 	},
 	additionalMetaTags: [
 		{
 			name: "publisher",
-			content: "Mintaka Studio",
+			content: "ASTECH",
+		},
+		{
+			name: "keywords",
+			content: "inteligencia artificial, IA, automatización, desarrollo de apps, agentes IA, soluciones tecnológicas, innovación",
 		},
 	],
 };
@@ -66,7 +70,7 @@ const seo = {
 };
 
 function cursorFollowerActive() {
-	const paths = ["", "/", "/it/", "/it"];
+	const paths = ["", "/", "/es/", "/es"];
 	return paths.includes(pathname);
 }
 ---
